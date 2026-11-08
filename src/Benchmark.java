@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class Benchmark {
@@ -34,7 +35,7 @@ public class Benchmark {
         System.out.printf("%-15s %-12s %8d %-8s %10.3f ms %12d ops %6d result%n",
                 experiment, algorithm, size, testCase, avgMs, operations, matches);
         csvRows.add(experiment + "," + algorithm + "," + size + "," + testCase + ","
-                + String.format("%.3f", avgMs) + "," + operations + "," + matches);
+                + String.format(Locale.US, "%.3f", avgMs) + "," + operations + "," + matches);
     }
 
     public static void main(String[] args) throws IOException {
@@ -65,11 +66,14 @@ public class Benchmark {
             record("DP", "EditDistance", size, "random", total / RUNS / 1e6, (long) size * size, result);
         }
 
+
         int[] textSizes = {10000, 50000, 100000};
         for (int size : textSizes) {
             String text = randomString(size);
 
+
             String present = text.substring(size / 2, size / 2 + PATTERN_LENGTH);
+
             String absent = randomString(PATTERN_LENGTH);
             while (!NaiveMatcher.search(text, absent).isEmpty()) {
                 absent = randomString(PATTERN_LENGTH);
@@ -127,7 +131,6 @@ public class Benchmark {
             }
             record("Kasai", "Kasai", size, "random", total / RUNS / 1e6, Kasai.comparisons, 0);
         }
-
 
         try (FileWriter writer = new FileWriter("results/results.csv")) {
             writer.write("experiment,algorithm,size,case,avg_time_ms,operations,result\n");
